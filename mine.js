@@ -2,6 +2,7 @@ const boardSize = 5;
 const mineCount = 5;
 let board = [];
 let gameOver = false;
+let revealedCount = 0;
 
 const boardEl = document.getElementById('board');
 const statusEl = document.getElementById('status');
@@ -69,25 +70,33 @@ function updateNumbers() {
 }
 
 function revealCell(cell) {
-  if (cell.revealed || gameOver) return;
-
-  cell.revealed = true;
-  cell.element.classList.add('revealed');
-
-  if (cell.mine) {
-    cell.element.textContent = '💣';
-    statusEl.textContent = 'Game Over!';
-    gameOver = true;
-    revealAll();
-  } else {
+    if (cell.revealed || gameOver) return;
+  
+    cell.revealed = true;
+    cell.element.classList.add('revealed');
+    revealedCount++;
+  
+    if (cell.mine) {
+      cell.element.textContent = '💣';
+      statusEl.textContent = 'Game Over!';
+      gameOver = true;
+      revealAll();
+      return;
+    }
+  
     const count = cell.adjacentMines;
     if (count > 0) {
       cell.element.textContent = count;
     } else {
       revealEmptyNeighbors(cell);
     }
+  
+    if (revealedCount === boardSize * boardSize - mineCount) {
+      statusEl.textContent = '🎉 You Win!';
+      gameOver = true;
+      revealAll();
+    }
   }
-}
 
 function revealEmptyNeighbors(cell) {
   const { row, col } = cell;
