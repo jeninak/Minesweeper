@@ -19,12 +19,18 @@ function createBoard() {
       const cell = {
         mine: false,
         revealed: false,
+        flagged: false,
         element: document.createElement('div'),
         row, col
       };
 
       cell.element.className = 'cell';
       cell.element.addEventListener('click', () => revealCell(cell));
+      cell.element.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        toggleFlag(cell);
+      });
+      
 
       board[row][col] = cell;
       boardEl.appendChild(cell.element);
@@ -125,5 +131,19 @@ function revealAll() {
     }
   });
 }
+
+function toggleFlag(cell) {
+    if (cell.revealed || cell.flagged || gameOver) return;
+  
+    cell.flagged = !cell.flagged;
+  
+    if (cell.flagged) {
+      cell.element.textContent = '🚩';
+      cell.element.style.backgroundColor = '#f9d342';
+    } else {
+      cell.element.textContent = '';
+      cell.element.style.backgroundColor = '#ccc';
+    }
+  }
 
 createBoard();
